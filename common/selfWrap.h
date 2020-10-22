@@ -5,6 +5,9 @@
 #ifndef __SELFWRAP_H
 #define __SELFWRAP_H
 
+#include <sys/types.h>
+#include <sys/socket.h>
+
 /** perror + exit **/
 void perr_exit(const char *err_str);	
 
