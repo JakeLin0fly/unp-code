@@ -1,6 +1,6 @@
 /**
  * 【场景】条件变量的信号产生后，子线程才阻塞于等待条件满足
- * 【结论】条件满足信号丢失，子线程一直阻塞
+ * 【结论】条件满足但信号丢失，不再告知条件满足，子线程一直阻塞
 **/
 
 #include <unistd.h>
@@ -38,16 +38,15 @@ int main(int argc, char const *argv[])
 
     pthread_create(&tid, NULL, thread_son, NULL);
     cout << "主线程：子线程创建完毕" << endl;
-    sleep(2); // 保证子线程获得互斥锁并阻塞在条件变量上
+
+    pthread_mutex_lock(&mutex_cond.mutex);
+    cout << "主线程：获取到互斥锁" << endl;
 
     cout << "主线程：发出 signal... " << endl;
     pthread_cond_signal(&mutex_cond.cond);
 
-    // pthread_mutex_lock(&mutex_cond.mutex);
-    // cout << "主线程：获取到互斥锁" << endl;
-
-    // pthread_mutex_unlock(&mutex_cond.mutex);
-    // cout << "主线程：释放掉互斥锁" << endl;
+    pthread_mutex_unlock(&mutex_cond.mutex);
+    cout << "主线程：释放掉互斥锁" << endl;
 
     pthread_join(tid, NULL); // 等待回收子线程
 
